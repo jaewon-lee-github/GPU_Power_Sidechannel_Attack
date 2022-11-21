@@ -13,9 +13,9 @@ from time import sleep
 from tqdm import tqdm
 from benchmark import Benchmark
 
-# DVFS when freq is zero 
+# DVFS when freq is zero
 def set_freq(freq):
-    if freq != 0: 
+    if freq != 0:
         print("input_freq= {}".format(freq))
         print("\t** Frequency will be locked to ",freq)
         os.system("sudo intel_gpu_frequency --set {}".format(freq))
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     rodinia_ocl_dir = Path('/home/jaewon/work/rodinia_3.1/opencl')
     rapl_dir = rodinia_ocl_dir / "lib"
 
-    options, remainder = getopt.getopt(sys.argv[1:], 'i:t:cf:smlr', 
+    options, remainder = getopt.getopt(sys.argv[1:], 'i:t:cf:smlr',
         ['interval=',
         'iteration=',
         'clean_make',
@@ -67,13 +67,13 @@ if __name__ == '__main__':
     print ('2. OPTIONS   :', options)
 
     interval = 1
-    input_interval = None 
+    input_interval = None
     input_freq = None
     make = False
     clean = False
     iteration = 1
     rapl_make = False
-    run = True  
+    run = True
     sweep = False
 
     for opt, arg in options:
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     output_file_name = set_filename(dt_string,interval,sweep,input_freq)
     output= open(output_file_name, "w")
     uncore = ""
-    benchmark = Benchmark()
+    benchmark = Benchmark("igpu")
 
     for cur_freq in freq_list:
         set_freq(cur_freq)
@@ -170,7 +170,7 @@ if __name__ == '__main__':
                                 #print(row)
                                 if line == "":
                                     line =  row['uncore']
-                                else: 
+                                else:
                                     line = line + ','+row['uncore']
                             uncore = uncore + str(benchmark.get_benchmark_index(bm)) + "," + str(cur_freq)+"," + line + '\n'
             # print(uncore)
@@ -185,4 +185,4 @@ if __name__ == '__main__':
         print("Set frequency to default (Min:300, Max:1100)")
         os.system("sudo intel_gpu_frequency -d")
         os.system("sudo intel_gpu_frequency")
-    
+
