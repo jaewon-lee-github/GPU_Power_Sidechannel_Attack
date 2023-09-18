@@ -86,6 +86,14 @@ if __name__ == '__main__':
                 print("Training loss {} Steps: {}".format(running_loss / 100, epoch * len(train_dataloader) + i))
                 running_loss = 0.0
 
+    # Save model
+    filename = 'model.pt'
+    counter = 0
+    while os.path.exists(filename):
+        filename = 'model_' + str(counter) + '.pt'
+        counter += 1
+    torch.save(model.state_dict(), filename)
+
     # For confustion matrix
     y_pred = []
     y_true = []
