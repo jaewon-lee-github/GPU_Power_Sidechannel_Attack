@@ -10,9 +10,10 @@ from scipy.stats import gmean
 from pathlib import Path
 from benchmark import Benchmark
 import matplotlib.font_manager as fm
+from env import myEnv
 # custom directory definition
-root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-result_dir = root_dir / "GPU_Power_Sidechannel_Attack/results"
+myEnv = myEnv()
+result_dir = myEnv.result_dir
 
 # params for theme
 # FontProperties

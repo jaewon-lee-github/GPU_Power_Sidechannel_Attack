@@ -12,6 +12,12 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 import subprocess
+from env import myEnv
+
+myEnv= myEnv()
+# custom directory definition
+nvbit_so = myEnv.nvbit_so
+result_dir = myEnv.result_dir
 
 def handling_options():
     options, remainder = getopt.getopt(
@@ -68,10 +74,6 @@ def get_outfile(suite_name, freq_mode, iteration, interval):
     return ofile_name
 
 
-# custom directory definition
-root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-nvbit_so = root_dir / "nvbit_release/tools/power/power.so"
-result_dir = root_dir / "GPU_Power_Sidechannel_Attack/results"
 
 
 def run_benchmark_suite(benchmark, interval, make, device, clean, run, freq_mode):
@@ -113,16 +115,17 @@ def run_benchmark_suite(benchmark, interval, make, device, clean, run, freq_mode
                         run_command = line
                         break
             try:
-                retcode = subprocess.call("mycmd" + " myarg", shell=True)
+                run_command = f"sudo LD_PRELOAD={nvbit_so} CUDA_VISIBLE_DEVICES={device} NOBANNER=0 INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command} > /dev/null 2>&1"
+                # run_command = f"sudo LD_PRELOAD={nvbit_so} INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command}"
+                print(run_command)
+                retcode = subprocess.call(f"{run_command}", shell=True)
                 if retcode < 0:
                     print("Child was terminated by signal", -retcode, file=sys.stderr)
                 else:
                     print("Child returned", retcode, file=sys.stderr)
             except OSError as e:
                 print("Execution failed:", e, file=sys.stderr)
-            run_command = f"sudo LD_PRELOAD={nvbit_so} CUDA_VISIBLE_DEVICES={device} NOBANNER=0 INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command} > /dev/null 2>&1"
-            # run_command = f"sudo LD_PRELOAD={nvbit_so} INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command}"
-            os.system(run_command)
+            #os.system(run_command)
 
 
 if __name__ == "__main__":

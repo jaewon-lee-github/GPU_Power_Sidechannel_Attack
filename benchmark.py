@@ -1,9 +1,13 @@
 import os
 from pathlib import Path
+from env import myEnv
 
+home="/home/jaewon/work"
+tango_path=home + "Tango/GPU"
 
 class Benchmark:
     def __init__(self, suite):
+        self.myEnv = myEnv()
         # if suite== "macsim":
         #     self.benchmark_dict = [
         #         # "backprop",
@@ -65,9 +69,7 @@ class Benchmark:
         #         "MergeSort",
         #     ]
         if suite == "rodinia_cuda":
-            self.base_dir = Path(
-                "/fast_data/jaewon/GPU_SCA/power_patch/rodinia_3.1/cuda"
-            )
+            self.base_dir = self.myEnv.rodinia_dir
             self.benchmark_dict = dict(
                 [
                     ("backprop", ""),
@@ -93,7 +95,7 @@ class Benchmark:
                 ]
             )
         elif suite == "tango_cuda":
-            self.base_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch/Tango/GPU")
+            self.base_dir = self.myEnv.tango_dir
             self.benchmark_dict = dict(
                 [
                     ("AlexNet", ""),
@@ -105,7 +107,7 @@ class Benchmark:
                 ]
             )
         elif suite == "tango_cuda2":
-            self.base_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch/Tango2/GPU")
+            self.base_dir = myEnv.tango2_dir
             self.benchmark_dict = dict(
                 [
                     ("AlexNet", ""),
@@ -116,13 +118,13 @@ class Benchmark:
                     ("SqueezeNet", ""),
                 ]
             )
-        elif suite == "ft_cuda":
-            self.base_dir = Path("/fast_data/jaewon/FasterTransformer/build")
-            self.benchmark_dict = dict(
-                [
-
-                ]
-            )
+        #elif suite == "ft_cuda":
+        #    self.base_dir = Path("/fast_data/jaewon/FasterTransformer/build")
+        #    self.benchmark_dict = dict(
+        #        [
+        #
+        #       ]
+        #)
         else:
             print("ERR: select macsim or igpu")
             exit()

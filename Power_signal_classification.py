@@ -23,6 +23,16 @@ import torch
 from benchmark import Benchmark
 import getopt
 
+from env import myEnv
+
+# custom directory definition
+root_dir = myEnv.root_dir
+result_dir = myEnv.result_dir
+train_file= "full_result_tango_09182023_050658_mode_1_x10_100ms.csv"
+test_file= "full_result_tango_09182023_044707_mode_1_x2_100ms.csv"
+#test_file= train_file
+train_input_file = result_dir / train_file
+test_input_file = result_dir / test_file
 
 # train_input_file = sys.argv[1]
 # test_input_file = sys.argv[2]
@@ -98,14 +108,6 @@ class Classifier(nn.Module):
         x = F.relu(self.fc2(x))
         return F.log_softmax(self.fc3(x), dim=1)
 
-# custom directory definition
-root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-result_dir = root_dir / "GPU_Power_Sidechannel_Attack/results"
-train_file= "full_result_tango_09182023_050658_mode_1_x10_100ms.csv"
-test_file= "full_result_tango_09182023_044707_mode_1_x2_100ms.csv"
-#test_file= train_file
-train_input_file = result_dir / train_file
-test_input_file = result_dir / test_file
 
 def drawing_confusion_matrix(uni_uniq_kernel, num_class, y_pred, y_true):
     cmap = "mako"
