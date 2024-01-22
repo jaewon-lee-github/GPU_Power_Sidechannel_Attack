@@ -91,6 +91,7 @@ def run_benchmark_suite(benchmark, interval, make, device, clean, run, freq_mode
         print("="*10, bm, "="*10)
         # print("**** DVFS reset**")
         os.system("sudo nvidia-smi -rgc > /dev/null 2>&1")
+        os.environ["NOBANNER"] = "0"
         os.environ["INTERVAL"] = str(interval)
         os.environ["BENCH_NAME"] = bm
         os.environ["FREQ_MODE"] = "0"
