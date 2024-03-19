@@ -1,2 +1,5 @@
 __pycache__/benchmark.cpython-311.pyc
 **/*.csv
+**/*.o
+**/*.so
+__pycache__/env.cpython-311.pyc

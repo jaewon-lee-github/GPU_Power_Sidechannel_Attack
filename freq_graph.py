@@ -30,7 +30,6 @@ result_dir = myEnv.result_dir
 # size: Either a relative value of 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large' or an absolute font size, e.g., 10. Default: rcParams["font.size"] (default: 10.0)
 # math_fontfamily: The family of fonts used to render math text. Supported values are: 'dejavusans', 'dejavuserif', 'cm', 'stix', 'stixsans' and 'custom'. Default: rcParams["mathtext.fontset"] (default: 'dejavusans')
 
-
 def draw_multigraph(input, output_file):
     ## Theme setting
     # Context: notebook”, “paper”, “talk”, and “poster”
@@ -43,7 +42,7 @@ def draw_multigraph(input, output_file):
     ## sudo apt install cabextract
     ## wget https://gist.github.com/maxwelleite/10774746/raw/ttf-vista-fonts-installer.sh -q -O - | sudo bash
     ## fc-list | grep Calibri
-    ##  print(fm.findfont("Calibri")) 
+    ## print(fm.findfont("Calibri"))
     ## print(fm.findSystemFonts(fontpaths=None, fontext="ttf"))
 
     sns.set_theme(
@@ -284,7 +283,7 @@ if __name__ == "__main__":
     # freq_mode 0 = Natural, 1 = Random DVFS
     # load orginal dataframe
     interval = 100
-    freq_mode = [0, 1]
+    freq_mode = [range(3)]
     long_df, wide_df = collect_data_freq_mode(benchmark, freq_mode, interval)
     # df = pd.read_csv(f"{result_dir}/acc_df_{freq_mode}_{interval}ms.csv")
 
