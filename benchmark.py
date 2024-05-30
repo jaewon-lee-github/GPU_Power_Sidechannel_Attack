@@ -6,30 +6,31 @@ from env import myEnv
 class Benchmark:
     def __init__(self, suite):
         self.myEnv = myEnv()
+        self.suite = suite
         if suite == "rodinia_cuda":
             self.base_dir = self.myEnv.rodinia_dir
             self.benchmark_dict = dict(
                 [
-                    ("backprop", ""),
-                    ("cfd", ""),
+                    # ("backprop", ""),
+                    # ("cfd", ""),
                     ("gaussian", ""),
-                    ("bfs", ""),
-                    #  ("heartwall", ""),
-                    ("hotspot", ""),
-                    #  ("kmeans", ""),
-                    ("lavaMD", ""),
-                    ("lud", ""),
-                    ("nn", ""),
-                    ("nw", ""),
-                    ("srad_v1", "srad"),
-                    # ("srad_v2", "srad"),
-                    ("streamcluster", ""),
-                    ("particlefilter", ""),
-                    ("pathfinder", ""),
-                    # ("mummergpu", ""),
-                    # ("hybridsort", ""),
-                    # ("dwt2d", ""),
-                    # ("leukocyte",""),
+                    # ("bfs", ""),
+                    # #  ("heartwall", ""),
+                    # ("hotspot", ""),
+                    # #  ("kmeans", ""),
+                    # ("lavaMD", ""),
+                    # ("lud", ""),
+                    # ("nn", ""),
+                    # ("nw", ""),
+                    # ("srad_v1", "srad"),
+                    # # ("srad_v2", "srad"),
+                    # ("streamcluster", ""),
+                    # ("particlefilter", ""),
+                    # ("pathfinder", ""),
+                    # # ("mummergpu", ""),
+                    # # ("hybridsort", ""),
+                    # # ("dwt2d", ""),
+                    # # ("leukocyte",""),
                 ]
             )
         elif suite == "tango_cuda":
