@@ -10,7 +10,8 @@ class myEnv:
         self.nvbit_dir = self.root_dir / "NVBit_Power/tools/power/"
         self.nvbit_so = self.nvbit_dir / "power.so"
         self.result_dir = self.root_dir / "GPU_Power_Sidechannel_Attack/results"
-        self.benchmark_name = "tango_cuda"
+        self.benchmark_name = "rodinia_cuda"
+        # self.benchmark_name = "tango_cuda"
         self.figure_dir = self.result_dir / "../figures"
 
     def print_all(self):

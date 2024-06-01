@@ -45,10 +45,17 @@ def handling_options():
         ],
     )
 
-    sampling_interval = 100
+    # param for per-kernel meausre mode
+    bin_policy = 10  # 10 => measure per kernel instead of thread.
+    sampling_interval = 50
+
+    # param for per-thread measure mode
+    # bin_policy = 0  # 10 => measure per kernel instead of thread.
+    # sampling_interval = 100
     reset_interval = 2000
+
     make = False
-    tmake_clean = False
+    tmake_clean = True
     # tmake_clean = True
     clean = False
     iteration = 1
@@ -61,7 +68,6 @@ def handling_options():
     step_freq = 400
     # 0: Org DVFS, 1: Fixed, 2: Random, 3: Adaptive
     freq_mode = 0
-    bin_policy = 0
 
     for opt, arg in options:
         if opt in ("-i", "--sampling_interval"):
@@ -204,6 +210,15 @@ def run_benchmark_suite(options):
             # os.system(run_command)
 
 
+def accumulate(fin_long_df, filt_acc_df):
+    if fin_long_df is None:
+        fin_long_df = filt_acc_df
+    else:
+        fin_long_df = pd.concat([fin_long_df, filt_acc_df], ignore_index=True, axis=0)
+
+    return fin_long_df
+
+
 if __name__ == "__main__":
     result_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(result_dir)
@@ -247,8 +262,6 @@ if __name__ == "__main__":
     # final result: original, cut to min length
     fin_wide_df = None
     fin_long_df = None
-    threshold_sec = 4  # Change this to your desired threshold
-    threshold = threshold_sec * 1000 / sampling_interval
     print("**** Make nvbit_tool")
     os.chdir(nvbit_dir)
     if tmake_clean == True:
@@ -283,40 +296,41 @@ if __name__ == "__main__":
             print("ERR: No result file")
             exit()
 
-        Kernels = [
-            "AlexNet_execute3DconvolutionCuda",
-            "AlexNet_executeFCLayer",
-            "AlexNet_executelrnNormCuda_split",
-            "CifarNet_ExecuteFirstLayer",
-            "CifarNet_ExecuteSecondLayer",
-            "CifarNet_ExecuteThirdLayer",
-            "LSTM_ExecuteLSTM",
-            "ResNet_execute3DconvolutionCuda_split",
-            "ResNet_executeFirstLayerCUDA",
-            "SqueezeNet_ExecuteFirstLayer",
-            "SqueezeNet_ExecuteTenthLayer",
-            "SqueezeNet_Executefire4expand3x3",
-            "SqueezeNet_Executefire5expand3x3",
-        ]
-        mask = acc_df["Kernel"].map(lambda x: x in Kernels)
-
-        # final result cut to min length
-        # Step 1: Calculate the count of entries for the specified field
-        # value_counts = acc_df["Kernel"].value_counts()
-        # Step 2: Create a boolean mask based on the condition
-        # mask2 = acc_df["Kernel"].map(value_counts) >= threshold
-        filt_acc_df = acc_df[mask]
-        if fin_long_df is None:
-            fin_long_df = filt_acc_df
+        if bin_policy != 10:  # When kernel mode
+            Kernels = [
+                ["AlexNet", "execute3DconvolutionCuda"],
+                ["AlexNet", "executeFCLayer"],
+                ["AlexNet", ",executelrnNormCuda_split"],
+                ["CifarNet", "ExecuteFirstLayer"],
+                ["CifarNet", "ExecuteSecondLayer"],
+                ["CifarNet", "ExecuteThirdLayer"],
+                ["LSTM", "ExecuteLSTM"],
+                ["ResNet", "execute3DconvolutionCuda_split"],
+                ["ResNet", "executeFirstLayerCUDA"],
+                ["SqueezeNet", "ExecuteFirstLayer"],
+                ["SqueezeNet", "ExecuteTenthLayer"],
+                ["SqueezeNet", "Executefire4expand3x3"],
+                ["SqueezeNet", "Executefire5expand3x3"],
+            ]
+            mask = {}
+            for kernel in Kernels:
+                cur_mask = (acc_df["Benchmark"] == kernel[0]) & (
+                    acc_df["Kernel"] == kernel[1]
+                )
+                if len(mask):
+                    mask = mask | cur_mask
+                else:
+                    mask = cur_mask
+            filt_acc_df = acc_df[mask]
         else:
-            fin_long_df = pd.concat(
-                [fin_long_df, filt_acc_df], ignore_index=True, axis=0
-            )
+            filt_acc_df = acc_df
+
+        fin_long_df = accumulate(fin_long_df, filt_acc_df)
+        print(fin_long_df)
 
         acc_pvt_df = filt_acc_df.pivot(
-            index="Kernel", columns="Timestamp", values="Power"
+            index=["Benchmark", "Kernel"], columns="Timestamp", values="Power"
         )
-
         acc_pvt_df.reset_index(inplace=True)
         # print(acc_pvt_df)
 
@@ -331,8 +345,7 @@ if __name__ == "__main__":
     # cut the dataframe to min length
     min = fin_wide_df.count(axis=1).min()
     ftd_acc_df_min = fin_wide_df.iloc[:, 0:min]
-    print(ftd_acc_df_min)
-
+    # print(ftd_acc_df_min)
     # for kernel in fin_value_counts.index:
     #     if ftd_acc_df_min is None:
     #         ftd_acc_df_min = ftd_acc_df[ftd_acc_df["Kernel"] == kernel].iloc[0:min]
@@ -351,7 +364,7 @@ if __name__ == "__main__":
     fin_long_df.to_csv(f"long_{ofile_name}", index=False, mode="w")
     fin_wide_df.to_csv(f"full_{ofile_name}", index=False, mode="w")
     ftd_acc_df_min.to_csv(ofile_name, index=False, mode="w")
-    print(f"## store to csv {result_dir}/{ofile_name}")
+    print(f"## store to csv {result_dir}/long_{ofile_name}")
 
     # output.write(uncore)dd
     print("**** DVFS reset")
@@ -359,4 +372,4 @@ if __name__ == "__main__":
     print("**** Create symbolic link to result")
     link = Path("result.csv")
     link.unlink(missing_ok=True)
-    link.symlink_to(ofile_name)
+    link.symlink_to("long_"+ofile_name)
