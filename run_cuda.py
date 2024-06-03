@@ -59,7 +59,7 @@ def handling_options():
     # tmake_clean = True
     clean = False
     iteration = 1
-    device = 1
+    device = 0
     run = True
     verbose = 0
     suite = myEnv.benchmark_name
@@ -210,13 +210,13 @@ def run_benchmark_suite(options):
             # os.system(run_command)
 
 
-def accumulate(fin_long_df, filt_acc_df):
-    if fin_long_df is None:
-        fin_long_df = filt_acc_df
+def accumulate_df(final, cur):
+    if final is None:
+        final = cur
     else:
-        fin_long_df = pd.concat([fin_long_df, filt_acc_df], ignore_index=True, axis=0)
+        final = pd.concat([final, cur], ignore_index=True, axis=0)
 
-    return fin_long_df
+    return final
 
 
 if __name__ == "__main__":
@@ -286,10 +286,7 @@ if __name__ == "__main__":
             df = pd.read_csv(file)
             new_column = ["Iteration"] + df.columns.tolist()
             df = df.reindex(columns=new_column, fill_value=i)
-            if acc_df is None:
-                acc_df = df
-            else:
-                acc_df = pd.concat([acc_df, df], ignore_index=True, axis=0)
+            acc_df = accumulate_df(acc_df, df)
             # os.remove(file)
 
         if acc_df is None:
@@ -325,46 +322,26 @@ if __name__ == "__main__":
         else:
             filt_acc_df = acc_df
 
-        fin_long_df = accumulate(fin_long_df, filt_acc_df)
+        fin_long_df = accumulate_df(fin_long_df, filt_acc_df)
         print(fin_long_df)
 
         acc_pvt_df = filt_acc_df.pivot(
             index=["Benchmark", "Kernel"], columns="Timestamp", values="Power"
         )
         acc_pvt_df.reset_index(inplace=True)
-        # print(acc_pvt_df)
-
-        if fin_wide_df is None:
-            fin_wide_df = acc_pvt_df
-        else:
-            fin_wide_df = pd.concat(
-                [fin_wide_df, acc_pvt_df], ignore_index=True, axis=0
-            )
-        # print(fin_wide_df)
+        fin_wide_df = accumulate_df(fin_wide_df, acc_pvt_df)
 
     # cut the dataframe to min length
     min = fin_wide_df.count(axis=1).min()
     ftd_acc_df_min = fin_wide_df.iloc[:, 0:min]
-    # print(ftd_acc_df_min)
-    # for kernel in fin_value_counts.index:
-    #     if ftd_acc_df_min is None:
-    #         ftd_acc_df_min = ftd_acc_df[ftd_acc_df["Kernel"] == kernel].iloc[0:min]
-    #     else:
-    #         ftd_acc_df_min = pd.concat(
-    #             [
-    #                 ftd_acc_df_min,
-    #                 ftd_acc_df[ftd_acc_df["Kernel"] == kernel].iloc[0:min],
-    #             ],
-    #             ignore_index=True,
-    #             axis=0,
-    #         )
 
     # df_wide.to_csv(ofile_name, index=True, mode="w")
     os.chdir(result_dir)
     fin_long_df.to_csv(f"long_{ofile_name}", index=False, mode="w")
     fin_wide_df.to_csv(f"full_{ofile_name}", index=False, mode="w")
     ftd_acc_df_min.to_csv(ofile_name, index=False, mode="w")
-    print(f"## store to csv {result_dir}/long_{ofile_name}")
+    print(f"## store long form to csv {result_dir}/long_{ofile_name}")
+    print(f"## store wide form to csv {result_dir}/full_{ofile_name}")
 
     # output.write(uncore)dd
     print("**** DVFS reset")
@@ -372,4 +349,4 @@ if __name__ == "__main__":
     print("**** Create symbolic link to result")
     link = Path("result.csv")
     link.unlink(missing_ok=True)
-    link.symlink_to("long_"+ofile_name)
+    link.symlink_to("long_" + ofile_name)

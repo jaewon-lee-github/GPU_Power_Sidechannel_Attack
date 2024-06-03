@@ -53,8 +53,8 @@ test_files = [
 ]
 
 # test_file= train_file
-train_input_file = result_dir / train_file
-test_input_file = result_dir / test_file
+train_input_file = result_dir / train_files
+test_input_file = result_dir / test_files
 
 
 # train_input_file = sys.argv[1]

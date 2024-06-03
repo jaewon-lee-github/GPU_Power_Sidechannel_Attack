@@ -53,7 +53,9 @@ def bb_color_pallete(num_cat):
     return cp
 
 
-def draw_bar_multigraph(input, output_file, column):
+def draw_bar_multigraph(
+    input, output_file, x_axis, y_axis, group, column
+):  
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -115,7 +117,7 @@ def draw_bar_multigraph(input, output_file, column):
     # input.to_csv(result_dir / "temp.csv", index=False, mode="w")
     # input['Kernel'] = input['Kernel'].map(lambda x: x.split('_')[-1])
     # num_ker = len(input["Kernel"].unique())
-    input["Kernel"] = input["Kernel"].map(lambda x: x.replace("_", "\n"))
+    # input["Kernel"] = input["Kernel"].map(lambda x: x.replace("_", "\n"))
     # sns.catplot(data=titanic, x="sex", y="survived", hue="class", kind="bar")
     # sns.catplot(data=tips, x="day", y="total_bill", hue="weekend", kind="box")
     # sns.catplot(data=titanic, x="sex", y="survived", hue="class", kind="bar")
@@ -123,10 +125,10 @@ def draw_bar_multigraph(input, output_file, column):
     g = sns.catplot(
         data=input,
         kind="bar",
-        x="Kernel",
-        y=column,
-        hue="FreqMode",
-        hue_order=["base", "random", "HertzPatch"],
+        x=x_axis,
+        y=y_axis,
+        hue=group,
+        # hue_order=["base", "random", "HertzPatch"],
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
@@ -174,9 +176,9 @@ def draw_bar_multigraph(input, output_file, column):
         fontweight="bold",
     )
     # g.set_axis_labels("Time(*100ms)", "Power (mW)")
-    g.set_axis_labels("", "Normalized " + column)
+    g.set_axis_labels("", "Normalized " + y_axis)
     # g.set_xticklabels("")
-    g._legend.set_title("FreqMode")
+    g._legend.set_title(group)
     # g._legend.texts[0].set_text("Base")
     # g._legend.texts[1].set_text("Random")
     # g._legend.texts[2].set_text("Fixed_2GHz")
@@ -202,7 +204,9 @@ def draw_bar_multigraph(input, output_file, column):
 
 
 # argument input : pandas dataframe longform
-def draw_multigraph(input, output_file, column):
+def draw_line_multigraph(
+    input, output_file, x_axis, y_axis, group, column
+):  
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -263,18 +267,18 @@ def draw_multigraph(input, output_file, column):
     # input['Kernel'] = input['Kernel'].map(lambda x: x.split('_')[-1])
     # num_ker = len(input["Kernel"].unique())
     # input["Kernel"] = input["Kernel"].map(lambda x: x.replace("_", "\n"))
-    input["Kernel"] = input["Kernel"].map(lambda x: x.replace("_", "\n"))
+    # input["Kernel"] = input["Kernel"].map(lambda x: x.replace("_", "\n"))
     input["Kernel"] = input["Kernel"].map(lambda x: x.replace("Execute", ""))
     input["Kernel"] = input["Kernel"].map(lambda x: x.replace("execute", ""))
 
     g = sns.relplot(
         data=input,
         kind="line",
-        x="Timestamp",
-        y=column,
-        hue="FreqMode",
-        hue_order=["base", "random", "HertzPatch"],
-        col="Kernel",
+        x=x_axis,
+        y=y_axis,
+        hue=group,
+        # hue_order=["base", "random", "HertzPatch"],
+        col=column,
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
@@ -316,13 +320,13 @@ def draw_multigraph(input, output_file, column):
     )
     # g.set_axis_labels("Time(*100ms)", "Power (mW)")
 
-    if column == "Power":
-        y_axis_label= "Power (mW)"
-    elif column == "Freq":
-        y_axis_label= "Frequency (MHz)"
+    if y_axis == "Power":
+        y_axis_label = "Power (mW)"
+    elif y_axis == "Freq":
+        y_axis_label = "Frequency (MHz)"
     g.set_axis_labels("Time", y_axis_label)
     # g.set_xticklabels("")
-    g._legend.set_title("FreqMode")
+    g._legend.set_title(group)
     # g._legend.texts[0].set_text("Base")
     # g._legend.texts[1].set_text("Random")
     # g._legend.texts[2].set_text("Fixed_2GHz")
@@ -367,9 +371,10 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     files = [
-        "long_result_dev0_tango_cuda_05192024_202343_mode_0_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        "long_result_dev1_tango_cuda_05192024_202341_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        "long_result_dev0_tango_cuda_05202024_040556_mode_3_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        "long_result_dev0_rodinia_cuda_06022024_163758_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        # "long_result_dev0_tango_cuda_05192024_202343_mode_0_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        # "long_result_dev1_tango_cuda_05192024_202341_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        # "long_result_dev0_tango_cuda_05202024_040556_mode_3_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
     ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
@@ -391,15 +396,18 @@ if __name__ == "__main__":
             return "random"
         elif x == 3:
             return "HertzPatch"
-
     long_df["FreqMode"] = long_df["FreqMode"].map(titling)
     long_df["Power"] = long_df["Power"] / 10
+    long_df = long_df.fillna("")
+    
+    print(long_df)
+    
+    col_names = ["Iteration","Benchmark","Kernel","FreqMode"]
+    g_max_df = long_df.groupby(col_names).max().reset_index()
+    print(g_max_df)
+    g_mean_df = long_df.groupby(col_names).mean().reset_index()
 
-    # print(long_df)
-    g_max_df = long_df.groupby(["FreqMode", "Kernel", "Iteration"]).max().reset_index()
-    g_mean_df = (
-        long_df.groupby(["FreqMode", "Kernel", "Iteration"]).mean().reset_index()
-    )
+    print(g_mean_df)
     g_mean_df["Timestamp"] = g_max_df["Timestamp"]
 
     g_mean_df["Performance"] = 1 / (g_mean_df["Timestamp"].astype(float))
@@ -420,21 +428,13 @@ if __name__ == "__main__":
         return group
 
     # Group by 'Store' and apply custom function
-    target_list = ["Power", "Performance", "EDP","Freq"]
+    target_list = ["Power", "Performance", "EDP", "Freq"]
     g_norm_df = (
-        g_mean_df.groupby(["Kernel", "Iteration"])
+        g_mean_df.groupby(["Benchmark", "Kernel", "Iteration"])
         .apply(normalized, targets=target_list)
         .reset_index(drop=True)
     )
-
-    # print(g_norm_df.groupby(["FreqMode","Iteration"]).apply(gmean).reset_index())
-    # for c in columns_to_calculate:
-    #     g_norm_df[c] = g_norm_df[c].astype(float)
-    # grouped = (
-    #     g_norm_df.groupby(["FreqMode", "Iteration"])
-    #     .apply(lambda x: gmean(x, axis=0))
-    #     .reset_index()
-    # )
+    print(g_norm_df)
 
     # for tgt in target_list:
     #     draw_bar_multigraph(g_norm_df, out_dir / f"bar_graph_{tgt}", tgt)
@@ -444,140 +444,13 @@ if __name__ == "__main__":
     #     out_file = out_dir / f"line_graph_power_{tgt}"
     #     new_df = long_df.loc[long_df["FreqMode"] == tgt]
     #     draw_multigraph(new_df, out_file)
-    # out_file = out_dir / "line_graph_All"
-    # draw_multigraph(long_df, out_file)
-    
+    out_file = out_dir / "line_graph_power_All"
+    draw_line_multigraph(long_df, out_file, "Timestamp","Power","FreqMode","Benchmark")
+
     # modes = ["base", "random", "HertzPatch"]
     # for tgt in modes:
     #     out_file = out_dir / f"line_graph_freq_{tgt}"
     #     new_df = long_df.loc[long_df["FreqMode"] == tgt]
     #     draw_multigraph(new_df, out_file, "Freq")
-    out_file = out_dir / "line_graph_freq_All"
-    draw_multigraph(long_df, out_file,"Freq")
-
-    # # Set the font size and style for x-axis label and tick labels
-    # x_label = x_axis.get_label()
-    # x_label.set_fontsize(9)  # Adjust the font size as needed
-    # x_ticklabels = x_axis.get_ticklabels()
-    # for label in x_ticklabels:
-    #     label.set_fontsize(10)  # Adjust the font size for tick labels as needed
-
-    # # Set the font size and style for y-axis label and tick labels
-    # y_label = y_axis.get_label()
-    # y_label.set_fontsize(12)  # Adjust the font size as needed
-    # y_ticklabels = y_axis.get_ticklabels()
-    # for label in y_ticklabels:
-    #     label.set_fontsize(10)
-
-    # # Set the font properties for the legend
-    # for text in legend.texts:
-    #     print(text.get_text())
-    #     text.set_font_properties(font_prop)
-    # ax_column.set_xlabel("", fontsize=9)
-    # ax_column.set_title(workload, fontsize=13)
-
-    # ax_column.set_ylabel("", fontsize=9)
-    # ax_column.get_legend().remove()
-
-    # # Graph
-
-    # return g
-    # for row, ax_row in enumerate(axes):
-    #     for column, ax_column in enumerate(ax_row):
-    #         idx = row * 2 + column
-    #         workload = workloads[idx]
-    #         sns.lineplot(
-    #             data=org_df[workload],
-    #             ax=ax_column,
-    #             label="Baseline",
-    #             color=baseline_color,
-    #             linewidth=1.0,
-    #         )
-    #         sns.lineplot(
-    #             data=dvfs_df[workload],
-    #             ax=ax_column,
-    #             label="HertzPatch",
-    #             color=Hertzpatch_color,
-    #             linewidth=1.0,
-    #         )
-
-    #         # thickness=1.0
-    #         # for p in ['left', 'right', 'top', 'bottom']:
-    #         #   plt.gca().spines[p].set_linewidth(thickness)
-    #         #   plt.gca().spines[p].set_color('black')
-    #         # # ax_column.set_yticks("")
-    #         # ax_column.
-    #         # ax_column.set_yticks([-1,200,400,1000],fontsize=10)
-    #         # ax_column.xticks(fontsize=9)
-    #         # ax_column.yticks(fontsize=9)
-    #         ax_column.set_xlabel("", fontsize=9)
-    #         # ax_column.set_ylabel('Power (W)',fontsize=9)
-    #         ax_column.set_title(workload, fontsize=13)
-
-    #         ax_column.set_ylabel("", fontsize=9)
-    #         ax_column.get_legend().remove()
-    #         # ax_column.
-
-    # handles, labels = axes[-1][0].get_legend_handles_labels()
-    # fig.legend(
-    #     handles,
-    #     labels,
-    #     loc="upper center",
-    #     bbox_to_anchor=(-1.5, 1.05),
-    #     ncol=2,
-    #     fontsize=12,
-    # )
-    # fig.text(-1.5, 0.02, "Time (* 10K Cycle)", ha="center", fontsize=15)
-    # fig.text(-1, 0.5, "Power (W)", va="center", rotation="vertical", fontsize=15)
-    # fig.tight_layout()
-
-    # output_file = "Powertrace_Result"
-    # output_file = output_dir / output_file
-    # fig.savefig(output_file + ".pdf", format="pdf", bbox_inches="tight", dpi=600)
-
-
-# def collect_data(benchmark, interval):
-#     acc_df = None
-#     cur_dir = os.getcwd()
-#     os.chdir(benchmark.base_dir)
-#     print(os.getcwd())
-#     for file in glob.iglob(f"./**/output_*_*.csv", recursive=True):
-#         # format : Kernel,Timestamp,Freq,Power
-#         print(f"current file: {file}")
-#         df = pd.read_csv(file)
-#         if acc_df is None:
-#             acc_df = df
-#         else:
-#             acc_df = pd.concat([acc_df, df], ignore_index=True, axis=0)
-#         # os.remove(file)
-#     if acc_df is None:
-#         print("ERR: No result file")
-#         exit()
-
-#     # add Freq_mode column Now done in myNvml.cu
-#     # new_column = acc_df.columns.tolist() + ["Freq_mode"]
-#     # acc_df = acc_df.reindex(columns=new_column, fill_value=freq_mode)
-#     os.chdir(cur_dir)
-#     return acc_df
-
-
-# def collect_data_freq_mode(benchmark, interval):
-#     res_df = collect_data(benchmark, interval)
-
-#     threshold_sec = 4  # Change this to your desired threshold
-#     # Count the number of timestamps of each kernel
-#     # if it is below threshold then remove it with mask
-#     threshold = threshold_sec * 1000 / interval
-#     value_counts = res_df["Kernel"].value_counts()
-#     mask = res_df["Kernel"].map(value_counts) >= threshold
-#     filt_acc_df = res_df[mask]
-#     # filt_acc_df= acc_df.groupby("Kernel").filter(lambda group: len(group) >= threshold)
-#     # Step 3: Use the boolean mask to filter the DataFrame
-
-#     filt_wide_df = filt_acc_df.pivot(
-#         index=["Kernel", "Freq_mode"], columns="Timestamp", values="Power"
-#     )
-#     filt_wide_df.reset_index(inplace=True)
-#     # filt_acc_df.to_csv(f"{result_dir}/acc_df_{freq_mode}_{interval}ms.csv", index=False, mode="w")
-#     # filt_wide_df.to_csv(f"{result_dir}/wide_df_{freq_mode}_{interval}ms.csv", index=False, mode="w")
-#     return filt_acc_df, filt_wide_df
+    # out_file = out_dir / "line_graph_freq_All"
+    # draw_line_multigraph(long_df, out_file, "Timestamp","Freq","FreqMode","Benchmark")
