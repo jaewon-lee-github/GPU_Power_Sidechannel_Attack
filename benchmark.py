@@ -8,7 +8,7 @@ class Benchmark:
         self.myEnv = myEnv()
         self.suite = suite
         if suite == "rodinia_cuda":
-            self.base_dir = self.myEnv.rodinia_dir
+            self.base_dir = self.myEnv.rodinia_cuda_dir
             self.benchmark_dict = dict(
                 [
                     ("backprop", ""),
@@ -43,6 +43,32 @@ class Benchmark:
                     ("LSTM", ""),
                     ("ResNet", ""),
                     ("SqueezeNet", ""),
+                ]
+            )
+        if suite == "rodinia_ocl":
+            self.base_dir = self.myEnv.rodinia_ocl_dir
+            self.benchmark_dict = dict(
+                [
+                    ("backprop", ""),
+                    ("cfd", ""),
+                    ("gaussian", ""),  #  ./gaussian -s 3500
+                    ("bfs", ""),
+                    ("heartwall", ""),
+                    # ("hotspot", ""),
+                    # ("kmeans", ""),
+                    # ("lavaMD", ""),
+                    ("lud", ""),
+                    ("nn", ""),
+                    ("nw", ""),
+                    ("srad_v1", "srad"),
+                    # ("srad_v2", "srad"),
+                    ("streamcluster", ""),
+                    ("particlefilter", ""),
+                    ("pathfinder", ""),
+                    # ("mummergpu", ""),
+                    ("hybridsort", ""),
+                    # ("dwt2d", ""),
+                    # ("leukocyte",""),
                 ]
             )
         else:
