@@ -17,7 +17,7 @@ class myEnv:
             self.device_name = "RTX2080"
             # self.device_name = "GTX 1660"
             # self.device_name = "Titan Xp"
-            self.benchmark_name = "rodinia_cuda"
+            self.suite_name = "rodinia_cuda"
             # self.benchmark_name = "tango_cuda"
             self.tango_dir = self.root_dir / "Tango/GPU"
             self.rodinia_cuda_dir = self.root_dir / "rodinia_3.1/cuda"
@@ -27,10 +27,9 @@ class myEnv:
             # OpenCL 
             self.platform_name = "Intel GPU"
             self.device_name = "UHD770"
-            self.benchmark_name = "rodinia_ocl"
+            self.suite_name = "rodinia_ocl"
             self.rodinia_ocl_dir = self.root_dir / "rodinia_3.1/opencl"
             self.rapl_dir = self.rodinia_ocl_dir/ "lib"
-
 
         self.print_all()
 
@@ -38,7 +37,7 @@ class myEnv:
         # Common Information
         print("Platform_name =", self.platform_name)
         print("device_name =", self.device_name)
-        print("benchmark_name =", self.benchmark_name)
+        print("benchmark_name =", self.suite_name)
 
         # Common Directories
         print("root_dir =", self.root_dir)

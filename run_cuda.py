@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import subprocess
 from env import myEnv
 
-myEnv = myEnv()
+myEnv = myEnv("cuda")
 # custom directory definition
 nvbit_so = myEnv.nvbit_so
 result_dir = myEnv.result_dir
@@ -62,7 +62,7 @@ def handling_options():
     device = 0
     run = True
     verbose = 0
-    suite = myEnv.benchmark_name
+    suite = myEnv.suite_name
     min_freq = 400
     max_freq = 2000
     step_freq = 400
@@ -244,7 +244,7 @@ if __name__ == "__main__":
         f"sampling_interval={sampling_interval}, reset_interval={reset_interval} suite={suite}, make={make}, tmake={tmake_clean}, device={device}, clean={clean}, iteration={iteration}, run={run}, freq_mode={freq_mode}, bin_policy={bin_policy},min_freq={min_freq}, max_freq={max_freq}, step_freq={step_freq}, verbose={verbose}"
     )
 
-    benchmark = Benchmark(suite)
+    benchmark = Benchmark(myEnv)
     # datetime object containing current date and time
     ofile_name = get_outfile(
         suite,
@@ -284,8 +284,9 @@ if __name__ == "__main__":
         ):
             print(f"current file: {benchmark.base_dir}/{file}")
             df = pd.read_csv(file)
-            new_column = ["Iteration"] + df.columns.tolist()
-            df = df.reindex(columns=new_column, fill_value=i)
+            df["Platform"] = myEnv.platform_name
+            df["Device"] = myEnv.device_name
+            df["Iteration"] = i
             acc_df = accumulate_df(acc_df, df)
             # os.remove(file)
 

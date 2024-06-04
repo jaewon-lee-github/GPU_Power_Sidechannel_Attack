@@ -352,7 +352,7 @@ def draw_line_multigraph(
 
 
 if __name__ == "__main__":
-    benchmark = Benchmark(myEnv.benchmark_name)
+    benchmark = Benchmark(myEnv.suite_name)
     # freq_mode 0 = Natural, 1 = Random DVFS
     # load orginal dataframe
     interval = 100

@@ -1,14 +1,11 @@
 import os
 from pathlib import Path
-from env import myEnv
-
 
 class Benchmark:
-    def __init__(self, suite):
-        self.myEnv = myEnv()
-        self.suite = suite
-        if suite == "rodinia_cuda":
-            self.base_dir = self.myEnv.rodinia_cuda_dir
+    def __init__(self, e):
+        self.suite = e.suite_name
+        if self.suite == "rodinia_cuda":
+            self.base_dir = e.rodinia_cuda_dir
             self.benchmark_dict = dict(
                 [
                     ("backprop", ""),
@@ -33,8 +30,8 @@ class Benchmark:
                     # ("leukocyte",""),
                 ]
             )
-        elif suite == "tango_cuda":
-            self.base_dir = self.myEnv.tango_dir
+        elif self.suite== "tango_cuda":
+            self.base_dir = e.tango_dir
             self.benchmark_dict = dict(
                 [
                     ("AlexNet", ""),
@@ -45,8 +42,8 @@ class Benchmark:
                     ("SqueezeNet", ""),
                 ]
             )
-        if suite == "rodinia_ocl":
-            self.base_dir = self.myEnv.rodinia_ocl_dir
+        elif self.suite== "rodinia_ocl":
+            self.base_dir = e.rodinia_ocl_dir
             self.benchmark_dict = dict(
                 [
                     ("backprop", ""),
@@ -57,7 +54,7 @@ class Benchmark:
                     # ("hotspot", ""),
                     # ("kmeans", ""),
                     # ("lavaMD", ""),
-                    ("lud", ""),
+                    ("lud", "ocl"),
                     ("nn", ""),
                     ("nw", ""),
                     ("srad", ""), # different structure from cuda version
@@ -67,7 +64,7 @@ class Benchmark:
                     ("pathfinder", ""),
                     # ("mummergpu", ""),
                     ("hybridsort", ""),
-                    # ("dwt2d", ""),
+                    ("dwt2d", ""),
                     # ("leukocyte",""),
                 ]
             )
