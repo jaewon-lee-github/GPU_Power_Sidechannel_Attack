@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 class Benchmark:
     def __init__(self, e):
         self.suite = e.suite_name
@@ -16,7 +17,7 @@ class Benchmark:
                     # ("hotspot", ""),
                     # ("kmeans", ""),
                     # ("lavaMD", ""),
-                    ("lud", ""),
+                    # ("lud", ""),
                     ("nn", ""),
                     ("nw", ""),
                     ("srad_v1", "srad"),
@@ -30,7 +31,7 @@ class Benchmark:
                     # ("leukocyte",""),
                 ]
             )
-        elif self.suite== "tango_cuda":
+        elif self.suite == "tango_cuda":
             self.base_dir = e.tango_dir
             self.benchmark_dict = dict(
                 [
@@ -42,7 +43,7 @@ class Benchmark:
                     ("SqueezeNet", ""),
                 ]
             )
-        elif self.suite== "rodinia_ocl":
+        elif self.suite == "rodinia_ocl":
             self.base_dir = e.rodinia_ocl_dir
             self.benchmark_dict = dict(
                 [
@@ -54,17 +55,17 @@ class Benchmark:
                     # ("hotspot", ""),
                     # ("kmeans", ""),
                     # ("lavaMD", ""),
-                    ("lud", "ocl"),
+                    # ("lud", "ocl"),
                     ("nn", ""),
                     ("nw", ""),
-                    ("srad", ""), # different structure from cuda version
+                    ("srad", ""),  # different structure from cuda version
                     # ("srad_v2", "srad"),
                     ("streamcluster", ""),
                     ("particlefilter", ""),
                     ("pathfinder", ""),
                     # ("mummergpu", ""),
                     ("hybridsort", ""),
-                    ("dwt2d", ""),
+                    # ("dwt2d", ""),
                     # ("leukocyte",""),
                 ]
             )
