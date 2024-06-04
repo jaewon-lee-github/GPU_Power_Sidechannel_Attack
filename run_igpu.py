@@ -45,7 +45,7 @@ def handling_options():
 
     # param for per-kernel meausre mode
     bin_policy = 10  # 10 => measure per kernel instead of thread.
-    sampling_interval = 10
+    sampling_interval = 50
 
     # param for per-thread measure mode
     # bin_policy = 0  # 10 => measure per kernel instead of thread.
@@ -171,7 +171,10 @@ def run_benchmark_suite(options):
         # print("**** DVFS reset**")
         # os.system(f"sudo nvidia-smi -i {device} -rgc > /dev/null 2>&1")
 
-        bm_dir = benchmark.base_dir / benchmark.benchmark_dict[bm] / bm
+        if bm == "lud":
+            bm_dir = benchmark.base_dir / bm / benchmark.benchmark_dict[bm]
+        else:
+            bm_dir = benchmark.base_dir / benchmark.benchmark_dict[bm] / bm
         os.chdir(bm_dir)
         if clean == True:
             print("\tClean " + str(bm_dir))
@@ -190,9 +193,6 @@ def run_benchmark_suite(options):
                         break
             try:
                 run_command = f"DEVICE_ID={device} SAMPLING_INTERVAL={sampling_interval} RESET_INTERVAL={reset_interval} FREQ_MODE={freq_mode} BIN_POLICY={bin_policy} BENCH_NAME={bm} MIN_FREQ={min_freq} MAX_FREQ={max_freq} STEP_FREQ={step_freq} {run_command}"
-                # if verbose == 0:
-                #     run_command = run_command + "> /dev/null 2>&1"
-                # run_command = f"sudo LD_PRELOAD={nvbit_so} INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command}"
                 print(run_command)
                 retcode = subprocess.call(f"{run_command}", shell=True)
                 if retcode < 0:
