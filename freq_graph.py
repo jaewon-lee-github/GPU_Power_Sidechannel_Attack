@@ -53,9 +53,7 @@ def bb_color_pallete(num_cat):
     return cp
 
 
-def draw_bar_multigraph(
-    input, output_file, x_axis, y_axis, group, column
-):  
+def draw_bar_multigraph(input, output_file, x_axis, y_axis, group, column):
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -204,9 +202,7 @@ def draw_bar_multigraph(
 
 
 # argument input : pandas dataframe longform
-def draw_line_multigraph(
-    input, output_file, x_axis, y_axis, group, column
-):  
+def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -352,7 +348,7 @@ def draw_line_multigraph(
 
 
 if __name__ == "__main__":
-    benchmark = Benchmark(myEnv.suite_name)
+    benchmark = Benchmark(myEnv)
     # freq_mode 0 = Natural, 1 = Random DVFS
     # load orginal dataframe
     interval = 100
@@ -371,7 +367,8 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     files = [
-        "long_result_dev0_rodinia_cuda_06022024_163758_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        "long_result_dev0_rodinia_cuda_06032024_234844_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        # "long_result_dev0_rodinia_cuda_06022024_163758_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
         # "long_result_dev0_tango_cuda_05192024_202343_mode_0_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
         # "long_result_dev1_tango_cuda_05192024_202341_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
         # "long_result_dev0_tango_cuda_05202024_040556_mode_3_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
@@ -380,9 +377,7 @@ if __name__ == "__main__":
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
     for file in files:
         if long_df is None:
-            long_df = pd.read_csv(
-                file,
-            )
+            long_df = pd.read_csv(file)
         else:
             df = pd.read_csv(file)
             long_df = pd.concat([long_df, df], axis=0, ignore_index=True)
@@ -396,13 +391,14 @@ if __name__ == "__main__":
             return "random"
         elif x == 3:
             return "HertzPatch"
+
     long_df["FreqMode"] = long_df["FreqMode"].map(titling)
     long_df["Power"] = long_df["Power"] / 10
-    long_df = long_df.fillna("")
-    
+    long_df = long_df.fillna("None")
+
     print(long_df)
-    
-    col_names = ["Iteration","Benchmark","Kernel","FreqMode"]
+
+    col_names = ["Iteration", "Benchmark", "Kernel", "FreqMode", "Platform", "Device"]
     g_max_df = long_df.groupby(col_names).max().reset_index()
     print(g_max_df)
     g_mean_df = long_df.groupby(col_names).mean().reset_index()
@@ -430,7 +426,7 @@ if __name__ == "__main__":
     # Group by 'Store' and apply custom function
     target_list = ["Power", "Performance", "EDP", "Freq"]
     g_norm_df = (
-        g_mean_df.groupby(["Benchmark", "Kernel", "Iteration"])
+        g_mean_df.groupby(["Benchmark", "Kernel", "Iteration", "Platform", "Device"])
         .apply(normalized, targets=target_list)
         .reset_index(drop=True)
     )
@@ -445,7 +441,7 @@ if __name__ == "__main__":
     #     new_df = long_df.loc[long_df["FreqMode"] == tgt]
     #     draw_multigraph(new_df, out_file)
     out_file = out_dir / "line_graph_power_All"
-    draw_line_multigraph(long_df, out_file, "Timestamp","Power","FreqMode","Benchmark")
+    draw_line_multigraph(long_df, out_file, "Timestamp", "Power", "Device", "Benchmark")
 
     # modes = ["base", "random", "HertzPatch"]
     # for tgt in modes:
