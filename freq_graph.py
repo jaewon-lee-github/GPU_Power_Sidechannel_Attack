@@ -285,10 +285,9 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
         height=3,
         aspect=0.4,
         linewidth=0.5,
-        facet_kws={'sharex': False},
+        facet_kws={"sharex": False},
         # facet_kws={sharex=False},
         # facet_kws={'sharex': 'col'},
-
     )
     g.tick_params(
         axis="x",
@@ -444,7 +443,9 @@ if __name__ == "__main__":
     #     new_df = long_df.loc[long_df["FreqMode"] == tgt]
     #     draw_multigraph(new_df, out_file)
     out_file = out_dir / "line_graph_power_All"
-    draw_line_multigraph(long_df, out_file, "Timestamp", "Power", "Device", "Benchmark")
+    draw_line_multigraph(
+        long_df, out_file, "Timestamp", "Power", "Device", "Benchmark", "Freq"
+    )
 
     # modes = ["base", "random", "HertzPatch"]
     # for tgt in modes:

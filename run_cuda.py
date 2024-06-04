@@ -174,8 +174,7 @@ def run_benchmark_suite(options):
         print("=" * 10, bm, "=" * 10)
         # print("**** DVFS reset**")
         # os.system(f"sudo nvidia-smi -i {device} -rgc > /dev/null 2>&1")
-
-        bm_dir = benchmark.base_dir / benchmark.benchmark_dict[bm] / bm
+        bm_dir = benchmark.base_dir / bm / benchmark.benchmark_dict[bm] 
         os.chdir(bm_dir)
         if clean == True:
             print("\tClean " + str(bm_dir))
