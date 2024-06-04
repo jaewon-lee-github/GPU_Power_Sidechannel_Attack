@@ -3,12 +3,12 @@ from pathlib import Path
 
 
 class myEnv:
-    def __init__(self, target = "cuda"):
+    def __init__(self, target="cuda"):
 
         self._target = target
         # Common Directories
-        # self.root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-        self.root_dir = Path("/home/jaewon/hertzpatch/")
+        self.root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
+        # self.root_dir = Path("/home/jaewon/hertzpatch/")
         self.result_dir = self.root_dir / "GPU_Power_Sidechannel_Attack/results"
         self.figure_dir = self.result_dir / "../figures"
         if target == "cuda":
@@ -24,12 +24,12 @@ class myEnv:
             self.nvbit_dir = self.root_dir / "NVBit_Power/tools/power/"
             self.nvbit_so = self.nvbit_dir / "power.so"
         elif target == "ocl":
-            # OpenCL 
+            # OpenCL
             self.platform_name = "Intel GPU"
             self.device_name = "UHD770"
             self.suite_name = "rodinia_ocl"
             self.rodinia_ocl_dir = self.root_dir / "rodinia_3.1/opencl"
-            self.rapl_dir = self.rodinia_ocl_dir/ "lib"
+            self.rapl_dir = self.rodinia_ocl_dir / "lib"
 
         self.print_all()
 
@@ -53,4 +53,4 @@ class myEnv:
         elif self._target == "ocl":
             # opencl benchmarks
             print("rodinia_ocl_dir =", self.rodinia_ocl_dir)
-            print("rapl_dir=",self.rapl_dir)
+            print("rapl_dir=", self.rapl_dir)

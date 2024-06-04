@@ -20,7 +20,7 @@ class Benchmark:
                     # ("lud", ""),
                     ("nn", ""),
                     ("nw", ""),
-                    ("srad_v1", "srad"),
+                    ("srad", "srad_v1"),
                     # ("srad_v2", "srad"),
                     ("streamcluster", ""),
                     ("particlefilter", ""),

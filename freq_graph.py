@@ -202,7 +202,9 @@ def draw_bar_multigraph(input, output_file, x_axis, y_axis, group, column):
 
 
 # argument input : pandas dataframe longform
-def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
+def draw_line_multigraph(
+    input, output_file, x_axis, y_axis, group, column, second_y_axis=None
+):
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -283,10 +285,9 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         height=3,
         aspect=1.0,
         linewidth=0.5,
-        facet_kws={'sharex': False},
+        facet_kws={"sharex": False},
         # facet_kws={sharex=False},
         # facet_kws={'sharex': 'col'},
-
     )
     g.tick_params(
         axis="x",
@@ -371,7 +372,7 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     files = [
-        "result.csv",
+        "long_result.csv",
     ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
@@ -441,7 +442,9 @@ if __name__ == "__main__":
     #     new_df = long_df.loc[long_df["FreqMode"] == tgt]
     #     draw_multigraph(new_df, out_file)
     out_file = out_dir / "line_graph_power_All"
-    draw_line_multigraph(long_df, out_file, "Timestamp", "Power", "Device", "Benchmark")
+    draw_line_multigraph(
+        long_df, out_file, "Timestamp", "Power", "Device", "Benchmark", "Freq"
+    )
 
     # modes = ["base", "random", "HertzPatch"]
     # for tgt in modes:
