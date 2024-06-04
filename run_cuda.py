@@ -348,6 +348,10 @@ if __name__ == "__main__":
     print("**** DVFS reset")
     os.system(f"sudo nvidia-smi -i {device} -rgc > /dev/null 2>&1")
     print("**** Create symbolic link to result")
-    link = Path("result.csv")
-    link.unlink(missing_ok=True)
-    link.symlink_to("long_" + ofile_name)
+    long_link = Path("long_result.csv")
+    long_link.unlink(missing_ok=True)
+    long_link.symlink_to("long_" + ofile_name)
+
+    wide_link = Path("wide_result.csv")
+    wide_link.unlink(missing_ok=True)
+    wide_link.symlink_to("full_" + ofile_name)

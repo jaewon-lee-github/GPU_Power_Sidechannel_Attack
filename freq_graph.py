@@ -307,7 +307,7 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         grid_alpha=1.0,
         labelsize=15,
     )
-    g.set(xlim=(0, 100))
+    # g.set(xlim=(0, 100))
     # g = sns.FacetGrid(df, col="Kernel", col_wrap=4, height=2, hue="Freq_mode", palette=cp)
     # g.map(sns.lineplot, x="Timestamp", y="Power", linewidth =1.0, errorbar=None)
     # bbox_to_anchor reference: https://stackoverflow.com/questions/39803385/what-does-a-4-element-tuple-argument-for-bbox-to-anchor-mean-in-matplotlib/39806180#39806180
@@ -367,11 +367,7 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     files = [
-        "long_result_dev0_rodinia_cuda_06032024_234844_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        # "long_result_dev0_rodinia_cuda_06022024_163758_mode_0_10_x1_50ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        # "long_result_dev0_tango_cuda_05192024_202343_mode_0_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        # "long_result_dev1_tango_cuda_05192024_202341_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
-        # "long_result_dev0_tango_cuda_05202024_040556_mode_3_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv",
+        "result.csv",
     ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
