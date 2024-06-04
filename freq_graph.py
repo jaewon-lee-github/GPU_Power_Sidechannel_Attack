@@ -275,6 +275,7 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         hue=group,
         # hue_order=["base", "random", "HertzPatch"],
         col=column,
+        col_order=benchmark.get_benchmark_list(),
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
