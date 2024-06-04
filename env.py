@@ -8,14 +8,14 @@ class myEnv:
         self._target = target
         # Common Directories
         # self.root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-        self.root_dir = Path("/home/jaewon/hertzpatch/")
+        self.root_dir = Path("/home/jaewon/work/")
         self.result_dir = self.root_dir / "GPU_Power_Sidechannel_Attack/results"
         self.figure_dir = self.result_dir / "../figures"
         if target == "cuda":
             # CUDA
             self.platform_name = "NVIDIA GPU"
-            self.device_name = "RTX2080"
-            # self.device_name = "GTX 1660"
+            # self.device_name = "RTX2080"
+            self.device_name = "GTX 1660"
             # self.device_name = "Titan Xp"
             self.suite_name = "rodinia_cuda"
             # self.benchmark_name = "tango_cuda"

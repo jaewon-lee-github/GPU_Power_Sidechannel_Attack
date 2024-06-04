@@ -202,7 +202,7 @@ def draw_bar_multigraph(input, output_file, x_axis, y_axis, group, column):
 
 
 # argument input : pandas dataframe longform
-def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
+def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=None):
     # params for theme
     # FontProperties
     # family: A list of font names in decreasing order of priority. The items may include a generic font family name, either 'sans-serif', 'serif', 'cursive', 'fantasy', or 'monospace'. In that case, the actual font to be used will be looked up from the associated rcParam during the search process in findfont. Default: rcParams["font.family"] (default: ['sans-serif'])
@@ -277,6 +277,7 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         # hue_order=["base", "random", "HertzPatch"],
         col=column,
         col_order=benchmark.get_benchmark_list(),
+        row = row,
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
@@ -307,9 +308,9 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         length=5,
         width=1,
         colors="k",
-        left=True,
+        left=False,
         grid_color="k",
-        grid_alpha=1.0,
+        grid_alpha=0.5,
         labelsize=15,
     )
     # g.set(xlim=(0, 100))
@@ -327,7 +328,8 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         y_axis_label = "Frequency (MHz)"
     g.set_axis_labels("Time", y_axis_label)
     # g.set_xticklabels("")
-    g._legend.set_title(group)
+    # g._legend.set_title(group)
+    g._legend.set_title("")
     # g._legend.texts[0].set_text("Base")
     # g._legend.texts[1].set_text("Random")
     # g._legend.texts[2].set_text("Fixed_2GHz")
