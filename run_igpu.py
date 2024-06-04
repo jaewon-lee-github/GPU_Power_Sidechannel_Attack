@@ -53,7 +53,7 @@ def handling_options():
     reset_interval = 2000
 
     make = False
-    tmake_clean = True
+    tmake_clean = False
     # tmake_clean = True
     clean = False
     iteration = 1
@@ -162,9 +162,7 @@ def run_benchmark_suite(options):
         verbose,
     ) = options
     benchmark_list = benchmark.get_benchmark_list()
-    cuda_path = os.environ.get("CONDA_PREFIX")
     print("=" * 10, "Environment Variables", "=" * 10)
-    print("CUDA_PATH=", cuda_path)
     print("BENCH_PATH", benchmark.base_dir)
     print("=" * 40)
 
@@ -183,8 +181,6 @@ def run_benchmark_suite(options):
             os.system("make")
         if run == True:
             print("\t******Run " + str(bm_dir) + "********")
-            print("** DVFS reset")
-            os.system(f"sudo nvidia-smi -i {device} -rgc > /dev/null 2>&1")
             with open("./run", "r") as file:
                 for line in file:
                     if line.strip().startswith("#") or not line.strip():
@@ -193,7 +189,7 @@ def run_benchmark_suite(options):
                         run_command = line.strip()
                         break
             try:
-                run_command = f"sudo LD_PRELOAD={nvbit_so} CUDA_VISIBLE_DEVICES={device} NOBANNER=0 TOOL_VERBOSE={verbose} SAMPLING_INTERVAL={sampling_interval} RESET_INTERVAL={reset_interval} FREQ_MODE={freq_mode} BIN_POLICY={bin_policy} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH MIN_FREQ={min_freq} MAX_FREQ={max_freq} STEP_FREQ={step_freq} {run_command}"
+                run_command = f"DEVICE_ID={device} SAMPLING_INTERVAL={sampling_interval} RESET_INTERVAL={reset_interval} FREQ_MODE={freq_mode} BIN_POLICY={bin_policy} BENCH_NAME={bm} MIN_FREQ={min_freq} MAX_FREQ={max_freq} STEP_FREQ={step_freq} {run_command}"
                 # if verbose == 0:
                 #     run_command = run_command + "> /dev/null 2>&1"
                 # run_command = f"sudo LD_PRELOAD={nvbit_so} INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command}"
@@ -213,7 +209,6 @@ def accumulate_df(final, cur):
         final = cur
     else:
         final = pd.concat([final, cur], ignore_index=True, axis=0)
-
     return final
 
 
@@ -260,7 +255,7 @@ if __name__ == "__main__":
     # final result: original, cut to min length
     fin_wide_df = None
     fin_long_df = None
-    print("**** Make nvbit_tool")
+    print("**** Make rapl tool")
     os.chdir(rapl_dir)
     if tmake_clean == True:
         os.system("make clean")
@@ -282,6 +277,7 @@ if __name__ == "__main__":
         ):
             print(f"current file: {benchmark.base_dir}/{file}")
             df = pd.read_csv(file)
+            df.rename(columns={"uncore": "Power"}, inplace=True)
             new_column = ["Iteration"] + df.columns.tolist()
             df = df.reindex(columns=new_column, fill_value=i)
             acc_df = accumulate_df(acc_df, df)
@@ -291,34 +287,7 @@ if __name__ == "__main__":
             print("ERR: No result file")
             exit()
 
-        if bin_policy != 10:  # When kernel mode
-            Kernels = [
-                ["AlexNet", "execute3DconvolutionCuda"],
-                ["AlexNet", "executeFCLayer"],
-                ["AlexNet", ",executelrnNormCuda_split"],
-                ["CifarNet", "ExecuteFirstLayer"],
-                ["CifarNet", "ExecuteSecondLayer"],
-                ["CifarNet", "ExecuteThirdLayer"],
-                ["LSTM", "ExecuteLSTM"],
-                ["ResNet", "execute3DconvolutionCuda_split"],
-                ["ResNet", "executeFirstLayerCUDA"],
-                ["SqueezeNet", "ExecuteFirstLayer"],
-                ["SqueezeNet", "ExecuteTenthLayer"],
-                ["SqueezeNet", "Executefire4expand3x3"],
-                ["SqueezeNet", "Executefire5expand3x3"],
-            ]
-            mask = {}
-            for kernel in Kernels:
-                cur_mask = (acc_df["Benchmark"] == kernel[0]) & (
-                    acc_df["Kernel"] == kernel[1]
-                )
-                if len(mask):
-                    mask = mask | cur_mask
-                else:
-                    mask = cur_mask
-            filt_acc_df = acc_df[mask]
-        else:
-            filt_acc_df = acc_df
+        filt_acc_df = acc_df
 
         fin_long_df = accumulate_df(fin_long_df, filt_acc_df)
         print(fin_long_df)

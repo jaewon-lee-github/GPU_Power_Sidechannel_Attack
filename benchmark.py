@@ -60,7 +60,7 @@ class Benchmark:
                     ("lud", ""),
                     ("nn", ""),
                     ("nw", ""),
-                    ("srad_v1", "srad"),
+                    ("srad", ""), # different structure from cuda version
                     # ("srad_v2", "srad"),
                     ("streamcluster", ""),
                     ("particlefilter", ""),

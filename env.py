@@ -13,8 +13,8 @@ class myEnv:
         self.figure_dir = self.result_dir / "../figures"
         if target == "cuda":
             # CUDA
-            self.Platform_name = "NVIDIA GPU"
-            self.device_name = "RTX 2080 Ti"
+            self.platform_name = "NVIDIA GPU"
+            self.device_name = "RTX2080"
             # self.device_name = "GTX 1660"
             # self.device_name = "Titan Xp"
             self.benchmark_name = "rodinia_cuda"
@@ -25,7 +25,7 @@ class myEnv:
             self.nvbit_so = self.nvbit_dir / "power.so"
         elif target == "ocl":
             # OpenCL 
-            self.Platform_name = "Intel GPU"
+            self.platform_name = "Intel GPU"
             self.device_name = "UHD770"
             self.benchmark_name = "rodinia_ocl"
             self.rodinia_ocl_dir = self.root_dir / "rodinia_3.1/opencl"
@@ -36,7 +36,7 @@ class myEnv:
 
     def print_all(self):
         # Common Information
-        print("Platform_name =", self.Platform_name)
+        print("Platform_name =", self.platform_name)
         print("device_name =", self.device_name)
         print("benchmark_name =", self.benchmark_name)
 
