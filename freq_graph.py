@@ -227,6 +227,7 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
     ## sudo apt install cabextract
     ## wget https://gist.github.com/maxwelleite/10774746/raw/ttf-vista-fonts-installer.sh -q -O - | sudo bash
     ## fc-list | grep Calibri
+    ## rm ~/.cache/matplotlib -rf 
     ## print(fm.findfont("Calibri"))
     ## print(fm.findSystemFonts(fontpaths=None, fontext="ttf"))
 
@@ -279,9 +280,9 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column):
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
-        col_wrap=4,
+        # col_wrap=6,
         height=3,
-        aspect=1.0,
+        aspect=0.4,
         linewidth=0.5,
         facet_kws={'sharex': False},
         # facet_kws={sharex=False},
@@ -371,7 +372,7 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     files = [
-        "result.csv",
+        "long_result.csv",
     ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
