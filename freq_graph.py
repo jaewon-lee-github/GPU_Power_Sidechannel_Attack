@@ -268,24 +268,22 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
     input["Kernel"] = input["Kernel"].map(lambda x: x.replace("Execute", ""))
     input["Kernel"] = input["Kernel"].map(lambda x: x.replace("execute", ""))
 
-    g = sns.relplot(
-        data=input,
-        kind="line",
+    g = sns.FacetGrid(input, col=column,col_order=benchmark.get_benchmark_list(), row=row, margin_titles=True,
+        height=3,
+        aspect=0.4,
+        sharex=False,
+    )
+    g.map_dataframe(sns.lineplot, 
+        # kind="line",
+        linewidth=0.5,
         x=x_axis,
         y=y_axis,
         hue=group,
         # hue_order=["base", "random", "HertzPatch"],
-        col=column,
-        col_order=benchmark.get_benchmark_list(),
-        row = row,
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
         # col_wrap=6,
-        height=3,
-        aspect=0.4,
-        linewidth=0.5,
-        facet_kws={"sharex": False},
         # facet_kws={sharex=False},
         # facet_kws={'sharex': 'col'},
     )
@@ -328,21 +326,46 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
     g.set_axis_labels("Time", y_axis_label)
     # g.set_xticklabels("")
     # g._legend.set_title(group)
-    g._legend.set_title("")
+    # g._legend.set_visible(False)
     # g._legend.texts[0].set_text("Base")
     # g._legend.texts[1].set_text("Random")
     # g._legend.texts[2].set_text("Fixed_2GHz")
+    for ax in g.axes.flat:
+        # Make x and y-axis labels slightly larger
+        ax.set_xlabel(ax.get_xlabel(), fontsize='x-large')
+        ax.set_ylabel(ax.get_ylabel(), fontsize='x-large')
 
-    sns.move_legend(
-        g,
-        "lower center",
-        # bbox_to_anchor=(0.5, 0.97),
-        bbox_to_anchor=(0.5, 1),
-        ncol=3,
-        title=None,
-        frameon=True,
-        fontsize=12,
-    )
+        # Make title more human-readable and larger
+        # if ax.get_title():
+        #     print(ax.get_title())
+        #     ax.set_title(ax.get_title(),
+        #                 fontsize='xx-large')
+        #     device= ax.get_title().split('|')[0]
+
+        # Make right ylabel more human-readable and larger
+        # Only the 2nd and 4th axes have something in ax.texts
+        # if ax.texts:
+        #     # This contains the right ylabel text
+        #     txt = ax.texts[0]
+        #     ax.text(txt.get_unitless_position()[0], txt.get_unitless_position()[1],
+        #             txt.get_text().split('=')[1],
+        #             transform=ax.transAxes,
+        #             va='center',
+        #             fontsize='xx-large')
+        #     # Remove the original text
+        #     ax.texts[0].remove()
+        # ax.text(device)
+
+    # sns.move_legend(
+    #     g,
+    #     "lower center",
+    #     # bbox_to_anchor=(0.5, 0.97),
+    #     bbox_to_anchor=(0.5, 1),
+    #     ncol=3,
+    #     title=None,
+    #     frameon=True,
+    #     fontsize=12,
+    # )
     sns.despine(
         top=False, right=False, left=False, bottom=False, offset=None, trim=False
     )
@@ -372,8 +395,11 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
+
+
     files = [
         "long_result.csv",
+        "RTX2080_long_result.csv",
     ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
@@ -383,6 +409,10 @@ if __name__ == "__main__":
         else:
             df = pd.read_csv(file)
             long_df = pd.concat([long_df, df], axis=0, ignore_index=True)
+    intel = pd.read_csv("UHD770_long_result.csv")
+    intel.drop(['package-0', 'core'], axis=1,inplace=True)
+    long_df = pd.concat([long_df, intel], axis=0, ignore_index=True)
+    print(long_df)
 
     def titling(x):
         if x == 0:
@@ -444,7 +474,7 @@ if __name__ == "__main__":
     #     draw_multigraph(new_df, out_file)
     out_file = out_dir / "line_graph_power_All"
     draw_line_multigraph(
-        long_df, out_file, "Timestamp", "Power", "Device", "Benchmark", "Freq"
+        long_df, out_file, "Timestamp", "Power", "FreqMode", "Benchmark", row="Device"
     )
 
     # modes = ["base", "random", "HertzPatch"]

@@ -4,3 +4,5 @@ __pycache__/*
 **/*.so
 **/*.pt
 **/*.pdf
+env.py
+GPU_Power_Sidechannel_Attack.code-workspace
