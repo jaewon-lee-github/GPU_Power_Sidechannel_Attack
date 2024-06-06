@@ -171,10 +171,7 @@ def run_benchmark_suite(options):
         # print("**** DVFS reset**")
         # os.system(f"sudo nvidia-smi -i {device} -rgc > /dev/null 2>&1")
 
-        if bm == "lud":
-            bm_dir = benchmark.base_dir / bm / benchmark.benchmark_dict[bm]
-        else:
-            bm_dir = benchmark.base_dir / benchmark.benchmark_dict[bm] / bm
+        bm_dir = benchmark.base_dir / bm / benchmark.benchmark_dict[bm]
         os.chdir(bm_dir)
         if clean == True:
             print("\tClean " + str(bm_dir))
@@ -314,9 +311,14 @@ if __name__ == "__main__":
 
     # output.write(uncore)dd
     print("**** Create symbolic link to result")
-    link = Path("result.csv")
-    link.unlink(missing_ok=True)
-    link.symlink_to("long_" + ofile_name)
+    long_link = Path("long_result.csv")
+    long_link.unlink(missing_ok=True)
+    long_link.symlink_to("long_" + ofile_name)
+
+    wide_link = Path("wide_result.csv")
+    wide_link.unlink(missing_ok=True)
+    wide_link.symlink_to("full_" + ofile_name)
+
 
     # # In the sweep sequence, it will set back DVFS at last.
     # if input_freq != None and sweep == False:

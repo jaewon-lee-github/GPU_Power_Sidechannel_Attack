@@ -284,8 +284,10 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
         # col_wrap=6,
-        # facet_kws={sharex=False},
-        # facet_kws={'sharex': 'col'},
+        height=3,
+        aspect=0.4,
+        linewidth=0.5,
+        facet_kws={'sharex': False},
     )
     g.tick_params(
         axis="x",
