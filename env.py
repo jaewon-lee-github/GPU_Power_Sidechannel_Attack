@@ -7,8 +7,8 @@ class myEnv:
 
         self._target = target
         # Common Directories
-        self.root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
-        # self.root_dir = Path("/home/jaewon/hertzpatch/")
+        # self.root_dir = Path("/fast_data/jaewon/GPU_SCA/power_patch")
+        self.root_dir = Path("/home/jaewon/hertzpatch/")
         self.result_dir = self.root_dir / "GPU_Power_Sidechannel_Attack/results"
         self.figure_dir = self.result_dir / "../figures"
         if target == "cuda":

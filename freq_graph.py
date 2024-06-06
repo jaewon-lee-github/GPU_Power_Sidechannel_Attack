@@ -277,15 +277,15 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
         # hue_order=["base", "random", "HertzPatch"],
         col=column,
         col_order=benchmark.get_benchmark_list(),
-        row = row,
+        # row = row,
         # style="Freq_mode",
         palette=cp,
         # col_wrap=math.ceil(num_ker / 2),
-        # col_wrap=6,
+        # col_wrap=4,
         height=3,
         aspect=0.4,
         linewidth=0.5,
-        facet_kws={"sharex": False},
+        facet_kws={'sharex': False},
         # facet_kws={sharex=False},
         # facet_kws={'sharex': 'col'},
     )
@@ -327,8 +327,7 @@ def draw_line_multigraph(input, output_file, x_axis, y_axis, group, column,row=N
         y_axis_label = "Frequency (MHz)"
     g.set_axis_labels("Time", y_axis_label)
     # g.set_xticklabels("")
-    # g._legend.set_title(group)
-    g._legend.set_title("")
+    g._legend.set_title(group)
     # g._legend.texts[0].set_text("Base")
     # g._legend.texts[1].set_text("Random")
     # g._legend.texts[2].set_text("Fixed_2GHz")
