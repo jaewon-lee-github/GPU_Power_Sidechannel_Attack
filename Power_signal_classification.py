@@ -15,6 +15,9 @@ from pathlib import Path
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import log_loss
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import LabelEncoder
 import seaborn as sn
 import pandas as pd
 import sys
@@ -30,31 +33,6 @@ myEnv = myEnv()
 # custom directory definition
 root_dir = myEnv.root_dir
 result_dir = myEnv.result_dir
-# train_file= "full_result_tango_09182023_050658_mode_1_x10_100ms.csv"
-# train_file = "full_result_tango_cuda_03282024_230912_mode_0_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-# train_file = "full_result_tango_cuda_04022024_025426_mode_2_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-# train_file = "full_result_tango_cuda_03282024_230730_mode_0_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-train_files = [
-    "full_result_tango_cuda_03282024_230912_mode_0_0_x100_100ms_500MHz_2000MHz_100MHz.csv",
-]
-
-# test_file = "full_result_tango_cuda_04022024_025426_mode_2_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-# test_file = "avg_result.csv"
-# test_file = "avg_20.csv"
-# test_file= "full_result_tango_09182023_044707_mode_1_x2_100ms.csv"
-# test_file = "full_result_tango_cuda_03282024_230912_mode_0_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-# test_file = "full_result_tango_cuda_03282024_230730_mode_2_0_x100_100ms_500MHz_2000MHz_100MHz.csv"
-# test_file = "full_result_tango_cuda_05172024_175620_mode_3_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv"
-# test_file = "full_result_tango_cuda_05172024_175639_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz.csv"
-# test_file = "full_result_tango_cuda_05172024_175639_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz_copy.csv"
-# test_file = "full_result_tango_cuda_05172024_175639_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz_sliding_windows_20.csv"
-test_files = [
-    "full_result_tango_cuda_05172024_175639_mode_2_0_x100_100ms_2000ms_400MHz_2000MHz_400MHz_multi_traces_mean.csv",
-]
-
-# test_file= train_file
-train_input_file = result_dir / train_files
-test_input_file = result_dir / test_files
 
 
 # train_input_file = sys.argv[1]
@@ -137,7 +115,7 @@ class Classifier(nn.Module):
         return F.log_softmax(self.fc3(x), dim=1)
 
 
-def drawing_confusion_matrix(uni_uniq_kernel, num_class, y_pred, y_true):
+def drawing_confusion_matrix(uni_uniq_kernel, num_class, y_pred, y_true, test, target):
     cmap = "mako"
     # cmap = "Blues"
     cf_matrix = confusion_matrix(y_true, y_pred)
@@ -176,7 +154,7 @@ def drawing_confusion_matrix(uni_uniq_kernel, num_class, y_pred, y_true):
     # fig.savefig(output_file+".png", format='png',bbox_inches='tight',dpi=600)
     t = time.localtime()
     current_time = time.strftime("%d%m%Y_%H%M%S", t)
-    output_file = result_dir / f"confusion_matrix_{current_time}"
+    output_file = result_dir / f"confusion_matrix_{test}_{target}_{current_time}"
     fig.savefig(str(output_file) + ".pdf", format="pdf", bbox_inches="tight", dpi=600)
     print(f"Confusion matrix is saved to {output_file}.pdf")
 
@@ -185,62 +163,93 @@ if __name__ == "__main__":
     retrain = handling_options()
 
     # create multiple train_file and test_file pairs
-    train_df = pd.read_csv(train_input_file)
-    train_df = train_df.fillna(0)
-    train_shape = train_df.shape
+    dev_names = [
+        "Intel_UHD770",
+        "Nvidia_GTX_1660_Ti",
+        "Nvidia_RTX_3060",
+        "Nvidia_RTX_2080",
+    ]
 
-    test_df = pd.read_csv(test_input_file)
-    test_df = test_df.fillna(0)
-    test_shape = test_df.shape
+    for train_tgt in dev_names:
+        for test_tgt in dev_names:
+            print(f"Train: {train_tgt}, Test: {test_tgt}")
+            train_file = f"{train_tgt}_wide_result.csv"
+            test_file = f"{test_tgt}_wide_result.csv"
 
-    # padd 0 to make same shape of train and test
-    if train_shape[1] > test_shape[1]:
-        test_df = test_df.reindex(columns=train_df.columns, fill_value=0)
-    elif train_shape[1] < test_shape[1]:
-        train_df = train_df.reindex(columns=test_df.columns, fill_value=0)
-    assert (
-        test_df.shape[1] == train_df.shape[1]
-    ), "test and train data should have same number of samples"
+            # test_file= train_file
+            train_input_file = result_dir / train_file
+            test_input_file = result_dir / test_file
 
-    # Get common Kernel name
-    tr_uniq_kernel = train_df["Kernel"].unique()
-    te_uniq_kernel = test_df["Kernel"].unique()
-    uni_uniq_kernel = list(set(tr_uniq_kernel).union(te_uniq_kernel))
+            train_df = pd.read_csv(train_input_file)
+            train_df = train_df.fillna(0)
+            train_df = train_df.drop(columns="Kernel")
+            train_shape = train_df.shape
 
-    mapping_dict = {kernel: idx for idx, kernel in enumerate(uni_uniq_kernel)}
-    reverse_mapping_dict = {v: k for k, v in mapping_dict.items()}
-    train_df["Kernel"] = train_df["Kernel"].replace(mapping_dict)
-    test_df["Kernel"] = test_df["Kernel"].replace(mapping_dict)
+            test_df = pd.read_csv(test_input_file)
+            test_df = test_df.fillna(0)
+            test_df = test_df.drop(columns="Kernel")
+            test_shape = test_df.shape
 
-    train_dataloader = DataLoader(
-        dataset=MyDataset(train_df), batch_size=50, shuffle=False
-    )
-    test_dataloader = DataLoader(
-        dataset=MyDataset(test_df), batch_size=50, shuffle=True
-    )
+            # padd 0 to make same shape of train and test
+            if train_shape[1] > test_shape[1]:
+                test_df = test_df.reindex(columns=train_df.columns, fill_value=0)
+            elif train_shape[1] < test_shape[1]:
+                train_df = train_df.reindex(columns=test_df.columns, fill_value=0)
+            assert (
+                test_df.shape[1] == train_df.shape[1]
+            ), "test and train data should have same number of samples"
 
-    num_class = len(uni_uniq_kernel)
-    num_sample = test_df.shape[1] - 1  # need to remove kernel column
+            label = "Benchmark"
+            # Get common Kernel name
+            tr_uniq_kernel = train_df[label].unique()
+            te_uniq_kernel = test_df[label].unique()
+            uni_uniq_kernel = list(set(tr_uniq_kernel).union(te_uniq_kernel))
 
-    num_epochs = 1000
-    filename = f"model_{train_file}_{test_file}.pt"
-    model = Classifier(num_sample, num_class)
-    model = torch.nn.DataParallel(model)
-    if retrain or not os.path.isfile(filename):
-        model = model_training(model, train_dataloader, num_epochs, filename)
-    else:
-        model.load_state_dict(torch.load(filename))
+            # mapping_dict = {kernel: idx for idx, kernel in enumerate(uni_uniq_kernel)}
+            # reverse_mapping_dict = {v: k for k, v in mapping_dict.items()}
+            # print(mapping_dict)
+            # print(reverse_mapping_dict)
+            # test_df[label] = test_df[label].replace(mapping_dict)
+            label_encoder = LabelEncoder()
+            train_df[label] = label_encoder.fit_transform(train_df[label])
+            test_df[label] = label_encoder.fit_transform(test_df[label])
 
-    # For confustion matrix
-    y_pred = []
-    y_true = []
+            train_dataloader = DataLoader(
+                dataset=MyDataset(train_df), batch_size=50, shuffle=False
+            )
+            test_dataloader = DataLoader(
+                dataset=MyDataset(test_df), batch_size=50, shuffle=True
+            )
 
-    for instances, labels in test_dataloader:
-        output = model(instances)
-        output = (torch.max(torch.exp(output), 1)[1]).data.cpu().numpy()
-        y_pred.extend(output)  # Save Prediction
+            num_class = len(uni_uniq_kernel)
+            num_sample = test_df.shape[1] - 1  # need to remove kernel column
+            num_epochs = 1000
+            filename = f"model_{train_tgt}_{test_tgt}.pt"
+            model = Classifier(num_sample, num_class)
+            model = torch.nn.DataParallel(model)
+            if retrain or not os.path.isfile(filename):
+                model = model_training(model, train_dataloader, num_epochs, filename)
+            else:
+                model.load_state_dict(torch.load(filename))
 
-        labels = labels.data.cpu().numpy()
-        y_true.extend(labels)  # Save Truth
+            # For confustion matrix
+            y_pred = []
+            y_true = []
 
-    drawing_confusion_matrix(uni_uniq_kernel, num_class, y_pred, y_true)
+            for instances, labels in test_dataloader:
+                output = model(instances)
+                output = (torch.max(torch.exp(output), 1)[1]).data.cpu().numpy()
+                y_pred.extend(output)  # Save Prediction
+
+                labels = labels.data.cpu().numpy()
+                y_true.extend(labels)  # Save Truth
+
+            report_dict = classification_report(
+                y_true, y_pred, target_names=uni_uniq_kernel, output_dict=True
+            )
+            report_df = pd.DataFrame(report_dict)
+            report_df.to_csv(result_dir / f"report_{train_tgt}_{test_tgt}.csv")
+
+            drawing_confusion_matrix(
+                uni_uniq_kernel, num_class, y_pred, y_true, test_tgt, train_tgt
+            )

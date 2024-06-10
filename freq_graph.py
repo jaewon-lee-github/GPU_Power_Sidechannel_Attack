@@ -397,12 +397,18 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-
-
-    files = [
-        "long_result.csv",
-        "RTX2080_long_result.csv",
+    dev_names = [
+        # "Intel_UHD770",
+        "Nvidia_GTX_1660_Ti",
+        "Nvidia_RTX_3060",
+        "Nvidia_RTX_2080",
     ]
+    files = [ f"{dev}_long_result.csv" for dev in dev_names]
+
+    # files = [
+    #     "long_result.csv",
+    #     "RTX2080_long_result.csv",
+    # ]
     long_df = None
     # long_df's columns : Iteration,Kernel,Timestamp,Freq,FreqMode,BinPolicy,Power
     for file in files:
@@ -411,6 +417,7 @@ if __name__ == "__main__":
         else:
             df = pd.read_csv(file)
             long_df = pd.concat([long_df, df], axis=0, ignore_index=True)
+    
     intel = pd.read_csv("UHD770_long_result.csv")
     intel.drop(['package-0', 'core'], axis=1,inplace=True)
     long_df = pd.concat([long_df, intel], axis=0, ignore_index=True)
