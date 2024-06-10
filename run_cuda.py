@@ -47,7 +47,7 @@ def handling_options():
 
     # param for per-kernel meausre mode
     bin_policy = 10  # 10 => measure per kernel instead of thread.
-    sampling_interval = 50
+    sampling_interval = 100
 
     # param for per-thread measure mode
     # bin_policy = 0  # 10 => measure per kernel instead of thread.
@@ -194,7 +194,7 @@ def run_benchmark_suite(options):
                         run_command = line.strip()
                         break
             try:
-                run_command = f"sudo LD_PRELOAD={nvbit_so} CUDA_VISIBLE_DEVICES={device} NOBANNER=0 TOOL_VERBOSE={verbose} SAMPLING_INTERVAL={sampling_interval} RESET_INTERVAL={reset_interval} FREQ_MODE={freq_mode} BIN_POLICY={bin_policy} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH MIN_FREQ={min_freq} MAX_FREQ={max_freq} STEP_FREQ={step_freq} {run_command}"
+                run_command = f"sudo LD_PRELOAD={nvbit_so} CUDA_VISIBLE_DEVICES={device} NOBANNER=0 TOOL_VERBOSE={verbose} SAMPLING_INTERVAL={sampling_interval} RESET_INTERVAL={reset_interval} FREQ_MODE={freq_mode} BIN_POLICY={bin_policy} BENCH_NAME={bm} LD_LIBRARY_PATH={cuda_path}/lib:$LD_LIBRARY_PATH PATH={cuda_path}/bin:$PATH MIN_FREQ={min_freq} MAX_FREQ={max_freq} STEP_FREQ={step_freq} {run_command}"
                 # if verbose == 0:
                 #     run_command = run_command + "> /dev/null 2>&1"
                 # run_command = f"sudo LD_PRELOAD={nvbit_so} INTERVAL={interval} FREQ_MODE={freq_mode} BENCH_NAME={bm} PATH={cuda_path}/bin:$PATH {run_command}"
